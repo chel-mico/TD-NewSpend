@@ -1,25 +1,34 @@
-export type Category =
-  | DepositCategories
-  | WithdrawalCategories
-  | "Account Transfer";
+export const depositCategories = [
+  "Salary",
+  "E-transfer",
+  "Refund",
+  "Investment",
+] as const;
 
-export type DepositCategories =
-  | "Salary"
-  | "E-transfer"
-  | "Refund"
-  | "Investment";
+export type DepositCategories = (typeof depositCategories)[number];
 
-export type WithdrawalCategories =
-  | "Housing"
-  | "Transportation"
-  | "Dining"
-  | "Groceries"
-  | "Entertainment"
-  | "Shopping"
-  | "Subscriptions"
-  | "Travel"
-  | "Education"
-  | "Fee";
+export const withdrawalCategories = [
+  "Housing",
+  "Transportation",
+  "Dining",
+  "Groceries",
+  "Entertainment",
+  "Shopping",
+  "Subscriptions",
+  "Travel",
+  "Education",
+  "Fee",
+] as const;
+
+export type WithdrawalCategories = (typeof withdrawalCategories)[number];
+
+export const categories = [
+  ...depositCategories,
+  ...withdrawalCategories,
+  "Account Transfer",
+] as const;
+
+export type Category = (typeof categories)[number];
 
 export type Transaction = {
   accountId: number;
