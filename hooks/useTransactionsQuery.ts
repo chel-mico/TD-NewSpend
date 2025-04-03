@@ -1,16 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
-import { isSameDay, isSameMonth, isSameYear } from "date-fns";
-import { TRANSACTIONS } from "@/constants/Transactions";
+import { isSameDay, isSameMonth, isSameWeek, isSameYear } from "date-fns";
+import { Category, TRANSACTIONS } from "@/constants/Transactions";
 
-type Frequency = "monthly" | "yearly" | "daily";
+type Frequency = "daily" | "weekly" | "monthly" | "yearly";
 
-async function fetchTransactions(frequency: Frequency, period: Date) {
-  const filtered = TRANSACTIONS.filter((tr) => {
+function filterTransactions(frequency: Frequency, period: Date) {
+  return TRANSACTIONS.filter((tr) => {
     const trDate = new Date(tr.date);
 
     switch (frequency) {
       case "daily":
         return isSameDay(trDate, period);
+      case "weekly":
+        return isSameWeek(trDate, period);
       case "monthly":
         return isSameMonth(trDate, period);
       case "yearly":
@@ -19,16 +21,42 @@ async function fetchTransactions(frequency: Frequency, period: Date) {
         return false;
     }
   });
+}
 
-  // Sort by recency: newest first
-  return filtered.sort(
+async function fetchTransactions(frequency: Frequency, period: Date) {
+  const filtered = filterTransactions(frequency, period);
+  return filtered.toSorted(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
 }
 
 export function useTransactionsQuery(frequency: Frequency, period: Date) {
   return useQuery({
-    queryKey: ["transactionsQuery", frequency, period],
+    queryKey: ["transactions", frequency, period],
     queryFn: async () => fetchTransactions(frequency, period),
+  });
+}
+
+async function fetchTransactionsByCategory(frequency: Frequency, period: Date) {
+  const filtered = filterTransactions(frequency, period);
+  const groupedByCategory = Object.groupBy(
+    filtered,
+    (transaction) => transaction.category,
+  );
+
+  Object.keys(groupedByCategory).forEach((category) => {
+    const transactions = groupedByCategory[category as Category];
+    transactions?.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+  });
+
+  return groupedByCategory;
+}
+
+export function useTransactionsByCategory(frequency: Frequency, period: Date) {
+  return useQuery({
+    queryKey: ["transactionsByCategory", frequency, period],
+    queryFn: async () => fetchTransactionsByCategory(frequency, period),
   });
 }
