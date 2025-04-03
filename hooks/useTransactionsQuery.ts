@@ -60,3 +60,27 @@ export function useTransactionsByCategory(frequency: Frequency, period: Date) {
     queryFn: async () => fetchTransactionsByCategory(frequency, period),
   });
 }
+
+async function fetchTransactionsByMerchant(frequency: Frequency, period: Date) {
+  const filtered = filterTransactions(frequency, period);
+  const groupedByMerchant = Object.groupBy(
+    filtered,
+    (transaction) => transaction.merchant,
+  );
+
+  Object.keys(groupedByMerchant).forEach((merchant) => {
+    const transactions = groupedByMerchant[merchant as Category];
+    transactions?.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+  });
+
+  return groupedByMerchant;
+}
+
+export function useTransactionsByMerchant(frequency: Frequency, period: Date) {
+  return useQuery({
+    queryKey: ["transactionsByCategory", frequency, period],
+    queryFn: async () => fetchTransactionsByMerchant(frequency, period),
+  });
+}
