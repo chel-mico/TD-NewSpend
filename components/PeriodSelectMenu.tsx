@@ -41,7 +41,7 @@ export function PeriodSelectMenu({
 const styles = StyleSheet.create({
   dropdown: {
     flex: 1,
-    paddingHorizontal: 8,
+    paddingHorizontal: 16,
     backgroundColor: "#F0F0F0",
     borderRadius: 6,
   },
@@ -51,9 +51,11 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     color: "#000",
+    fontSize: 14,
   },
   inputSearchStyle: {
     height: 40,
+    fontSize: 14,
   },
   iconStyle: {
     width: 20,
