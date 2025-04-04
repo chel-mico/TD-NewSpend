@@ -3,10 +3,13 @@ import { useState } from "react";
 
 import { ToggleButton } from "@/components/ToggleButton";
 import TransactionList from "@/components/TransactionList";
+import { PeriodSelectMenu } from "@/components/PeriodSelectMenu";
+import type { Period } from "@/hooks/useTransactionsQuery";
 
 export default function HomeScreen() {
   const [merchants, setMerchants] = useState(false);
   const [categories, setCategories] = useState(false);
+  const [period, setPeriod] = useState<Period>("monthly");
 
   return (
     <View style={styles.container}>
@@ -21,8 +24,9 @@ export default function HomeScreen() {
           isActive={categories}
           onToggle={() => setCategories((v) => !v)}
         />
+        <PeriodSelectMenu selectedValue={period} onValueChange={setPeriod} />
       </View>
-      <TransactionList frequency="weekly" period={new Date()} />
+      <TransactionList period={period} date={new Date()} />
     </View>
   );
 }
@@ -35,6 +39,7 @@ const styles = StyleSheet.create({
   menuContainer: {
     display: "flex",
     flexDirection: "row",
+    gap: 3,
     justifyContent: "space-between",
     backgroundColor: "#fff",
     paddingHorizontal: 10,
