@@ -5,14 +5,24 @@ import { ToggleButton } from "@/components/ToggleButton";
 import TransactionList from "@/components/TransactionList";
 import { PeriodSelectMenu } from "@/components/PeriodSelectMenu";
 import type { Period } from "@/hooks/useTransactionsQuery";
+import { ProjectorSelectMenu } from "@/components/ProjectorSelectMenu";
 
+const today = new Date();
 export default function HomeScreen() {
   const [merchants, setMerchants] = useState(false);
   const [categories, setCategories] = useState(false);
   const [period, setPeriod] = useState<Period>("monthly");
+  const [date, setDate] = useState(today);
 
   return (
     <View style={styles.container}>
+      <ProjectorSelectMenu
+        period={period}
+        onValueChange={(date) => {
+          setDate(date);
+          console.log(date);
+        }}
+      />
       <View style={styles.menuContainer}>
         <ToggleButton
           label="Merchants"
@@ -24,9 +34,15 @@ export default function HomeScreen() {
           isActive={categories}
           onToggle={() => setCategories((v) => !v)}
         />
-        <PeriodSelectMenu selectedValue={period} onValueChange={setPeriod} />
+        <PeriodSelectMenu
+          selectedValue={period}
+          onValueChange={(p) => {
+            setPeriod(p);
+            setDate(new Date());
+          }}
+        />
       </View>
-      <TransactionList period={period} date={new Date()} />
+      <TransactionList period={period} date={date} />
     </View>
   );
 }

@@ -24,7 +24,7 @@ function TransactionItem({ transaction }: TransactionItemProps) {
   const formattedDate = format(transaction.date, "EEEE MMMM d, yyyy");
   const formattedAmount = formatToDollars(transaction.amount);
   const isDeposit = transaction.type === "deposit";
-  const underlineColor = isDeposit ? "#4CAF50" : "#F44336"; // Green/Red colors
+  const underlineColor = isDeposit ? "#5FC66E" : "#D96C6E"; // Green/Red colors
 
   return (
     <View style={styles.transactionContainer}>
@@ -88,9 +88,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   header: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 16,
+    fontSize: 14,
+    paddingBottom: 7,
   },
   separator: {
     height: 1,
