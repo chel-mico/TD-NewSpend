@@ -11,6 +11,7 @@ export type Period = "daily" | "weekly" | "monthly" | "yearly";
 const MONDAY = 1;
 
 function filterTransactions(period: Period, date: Date) {
+  // Uncommented original filtering code:
   return TRANSACTIONS.filter((tr) => {
     const trDate = new Date(tr.date);
 
@@ -27,10 +28,17 @@ function filterTransactions(period: Period, date: Date) {
         return false;
     }
   });
+  */
 }
 
 async function fetchTransactions(period: Period, date: Date) {
   const filtered = filterTransactions(period, date);
+  console.log('fetchTransactions:', { 
+    period, 
+    date, 
+    filteredCount: filtered.length,
+    sampleTransaction: filtered.length > 0 ? filtered[0] : null 
+  });
   return filtered.sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
@@ -43,18 +51,32 @@ export function useTransactionsQuery(period: Period, date: Date) {
   });
 }
 
+// Helper function to group by since Object.groupBy might not be available in all environments
+function groupBy<T>(array: T[], keyFn: (item: T) => string): Record<string, T[]> {
+  return array.reduce((result, item) => {
+    const key = keyFn(item);
+    if (!result[key]) {
+      result[key] = [];
+    }
+    result[key].push(item);
+    return result;
+  }, {} as Record<string, T[]>);
+}
+
 async function fetchTransactionsByCategory(period: Period, date: Date) {
   const filtered = filterTransactions(period, date);
-  const groupedByCategory = Object.groupBy(
+  const groupedByCategory = groupBy(
     filtered,
-    (transaction) => transaction.category,
+    (transaction) => transaction.category
   );
 
   Object.keys(groupedByCategory).forEach((category) => {
     const transactions = groupedByCategory[category as Category];
-    transactions?.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
+    if (transactions) {
+      transactions.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      );
+    }
   });
 
   return groupedByCategory;
@@ -69,16 +91,18 @@ export function useTransactionsByCategory(period: Period, date: Date) {
 
 async function fetchTransactionsByMerchant(period: Period, date: Date) {
   const filtered = filterTransactions(period, date);
-  const groupedByMerchant = Object.groupBy(
+  const groupedByMerchant = groupBy(
     filtered,
-    (transaction) => transaction.merchant,
+    (transaction) => transaction.merchant
   );
 
   Object.keys(groupedByMerchant).forEach((merchant) => {
-    const transactions = groupedByMerchant[merchant as Category];
-    transactions?.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
+    const transactions = groupedByMerchant[merchant];
+    if (transactions) {
+      transactions.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      );
+    }
   });
 
   return groupedByMerchant;
@@ -86,7 +110,7 @@ async function fetchTransactionsByMerchant(period: Period, date: Date) {
 
 export function useTransactionsByMerchant(period: Period, date: Date) {
   return useQuery({
-    queryKey: ["transactionsByCategory", period, date],
+    queryKey: ["transactionsByMerchant", period, date],
     queryFn: async () => fetchTransactionsByMerchant(period, date),
   });
 }
@@ -103,15 +127,18 @@ async function fetchTransactionsByCategoryAndMerchant(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
     );
 
-  const groupByMerchant = (transactions: Transaction[]) =>
-    Object.fromEntries(
-      Object.entries(Object.groupBy(transactions, (tr) => tr.merchant)).map(
+  const groupByMerchant = (transactions: Transaction[]) => {
+    const grouped = groupBy(transactions, (tr) => tr.merchant);
+    
+    return Object.fromEntries(
+      Object.entries(grouped).map(
         ([merchant, merchantTransactions]) => [
           merchant,
-          sortTransactionsByDate(merchantTransactions ?? []),
+          sortTransactionsByDate(merchantTransactions),
         ],
       ),
     );
+  };
 
   // Group by category and merchant, and then sort by date within each group
   return Object.entries(groupedByCategory).reduce(
@@ -128,7 +155,7 @@ export function useTransactionsByCategoryAndMerchant(
   date: Date,
 ) {
   return useQuery({
-    queryKey: ["transactionsByCategory", period, date],
+    queryKey: ["transactionsByCategoryAndMerchant", period, date],
     queryFn: async () => fetchTransactionsByCategoryAndMerchant(period, date),
   });
 }
