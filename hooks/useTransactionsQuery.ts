@@ -6,45 +6,45 @@ import {
   TRANSACTIONS,
 } from "@/constants/Transactions";
 
-export type Frequency = "daily" | "weekly" | "monthly" | "yearly";
+export type Period = "daily" | "weekly" | "monthly" | "yearly";
 
 const MONDAY = 1;
 
-function filterTransactions(frequency: Frequency, period: Date) {
+function filterTransactions(period: Period, date: Date) {
   return TRANSACTIONS.filter((tr) => {
     const trDate = new Date(tr.date);
 
-    switch (frequency) {
+    switch (period) {
       case "daily":
-        return isSameDay(trDate, period);
+        return isSameDay(trDate, date);
       case "weekly":
-        return isSameWeek(trDate, period, { weekStartsOn: MONDAY });
+        return isSameWeek(trDate, date, { weekStartsOn: MONDAY });
       case "monthly":
-        return isSameMonth(trDate, period);
+        return isSameMonth(trDate, date);
       case "yearly":
-        return isSameYear(trDate, period);
+        return isSameYear(trDate, date);
       default:
         return false;
     }
   });
 }
 
-async function fetchTransactions(frequency: Frequency, period: Date) {
-  const filtered = filterTransactions(frequency, period);
+async function fetchTransactions(period: Period, date: Date) {
+  const filtered = filterTransactions(period, date);
   return filtered.sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
 }
 
-export function useTransactionsQuery(frequency: Frequency, period: Date) {
+export function useTransactionsQuery(period: Period, date: Date) {
   return useQuery({
-    queryKey: ["transactions", frequency, period],
-    queryFn: async () => fetchTransactions(frequency, period),
+    queryKey: ["transactions", period, date],
+    queryFn: async () => fetchTransactions(period, date),
   });
 }
 
-async function fetchTransactionsByCategory(frequency: Frequency, period: Date) {
-  const filtered = filterTransactions(frequency, period);
+async function fetchTransactionsByCategory(period: Period, date: Date) {
+  const filtered = filterTransactions(period, date);
   const groupedByCategory = Object.groupBy(
     filtered,
     (transaction) => transaction.category,
@@ -60,15 +60,15 @@ async function fetchTransactionsByCategory(frequency: Frequency, period: Date) {
   return groupedByCategory;
 }
 
-export function useTransactionsByCategory(frequency: Frequency, period: Date) {
+export function useTransactionsByCategory(period: Period, date: Date) {
   return useQuery({
-    queryKey: ["transactionsByCategory", frequency, period],
-    queryFn: async () => fetchTransactionsByCategory(frequency, period),
+    queryKey: ["transactionsByCategory", period, date],
+    queryFn: async () => fetchTransactionsByCategory(period, date),
   });
 }
 
-async function fetchTransactionsByMerchant(frequency: Frequency, period: Date) {
-  const filtered = filterTransactions(frequency, period);
+async function fetchTransactionsByMerchant(period: Period, date: Date) {
+  const filtered = filterTransactions(period, date);
   const groupedByMerchant = Object.groupBy(
     filtered,
     (transaction) => transaction.merchant,
@@ -84,21 +84,18 @@ async function fetchTransactionsByMerchant(frequency: Frequency, period: Date) {
   return groupedByMerchant;
 }
 
-export function useTransactionsByMerchant(frequency: Frequency, period: Date) {
+export function useTransactionsByMerchant(period: Period, date: Date) {
   return useQuery({
-    queryKey: ["transactionsByCategory", frequency, period],
-    queryFn: async () => fetchTransactionsByMerchant(frequency, period),
+    queryKey: ["transactionsByCategory", period, date],
+    queryFn: async () => fetchTransactionsByMerchant(period, date),
   });
 }
 
 async function fetchTransactionsByCategoryAndMerchant(
-  frequency: Frequency,
-  period: Date,
+  period: Period,
+  date: Date,
 ) {
-  const groupedByCategory = await fetchTransactionsByCategory(
-    frequency,
-    period,
-  );
+  const groupedByCategory = await fetchTransactionsByCategory(period, date);
 
   // Group by merchant within each category and sort by date
   const sortTransactionsByDate = (transactions: Transaction[]) =>
@@ -127,12 +124,11 @@ async function fetchTransactionsByCategoryAndMerchant(
 }
 
 export function useTransactionsByCategoryAndMerchant(
-  frequency: Frequency,
-  period: Date,
+  period: Period,
+  date: Date,
 ) {
   return useQuery({
-    queryKey: ["transactionsByCategory", frequency, period],
-    queryFn: async () =>
-      fetchTransactionsByCategoryAndMerchant(frequency, period),
+    queryKey: ["transactionsByCategory", period, date],
+    queryFn: async () => fetchTransactionsByCategoryAndMerchant(period, date),
   });
 }

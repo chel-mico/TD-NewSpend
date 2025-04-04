@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import {
   useTransactionsQuery,
-  type Frequency,
+  type Period,
 } from "../hooks/useTransactionsQuery";
 import { Transaction } from "@/constants/Transactions";
 import { format } from "date-fns";
@@ -47,16 +47,16 @@ function TransactionItem({ transaction }: TransactionItemProps) {
 }
 
 interface TransactionListProps {
-  frequency: Frequency;
-  period: Date;
+  period: Period;
+  date: Date;
 }
 
-function TransactionList({ frequency, period }: TransactionListProps) {
+function TransactionList({ period, date }: TransactionListProps) {
   const {
     data: transactions,
     isLoading,
     isError,
-  } = useTransactionsQuery(frequency, period);
+  } = useTransactionsQuery(period, date);
 
   if (isLoading) {
     // TODO: loading ui
