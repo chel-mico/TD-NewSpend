@@ -42,7 +42,12 @@ export default function HomeScreen() {
           }}
         />
       </View>
-      <TransactionList period={period} date={date} />
+      <TransactionList 
+        period={period} 
+        date={date} 
+        showMerchants={merchants}
+        showCategories={categories}
+      />
     </View>
   );
 }
