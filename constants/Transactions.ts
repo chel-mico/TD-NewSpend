@@ -42,12 +42,19 @@ export type Transaction = {
   id: number;
   accountId: number;
   amount: number;
-  isDeposit: boolean;
   date: Date;
 
   merchant: string;
-  category: Category;
-};
+} & (
+  | {
+      type: "deposit";
+      category: DepositCategories;
+    }
+  | {
+      type: "withdrawal";
+      category: WithdrawalCategories;
+    }
+);
 
 function getRandomDaysAgo(): number {
   const randomChoice = faker.number.int({ min: 1, max: 100 });
@@ -129,15 +136,28 @@ let nextTransactionId = 0;
 
 export function getRandomTransaction(): Transaction {
   const isDeposit = faker.datatype.boolean();
-  const category = isDeposit
-    ? faker.helpers.arrayElement(depositCategories)
-    : faker.helpers.arrayElement(withdrawalCategories);
+
+  if (isDeposit) {
+    const category = faker.helpers.arrayElement(depositCategories);
+
+    return {
+      id: nextTransactionId++,
+      accountId: faker.number.int({ min: 1, max: 2 }),
+      amount: faker.number.float({ min: 2.0, max: 4000.0, fractionDigits: 2 }),
+      type: "deposit",
+      date: getRandomDate(),
+      merchant: getMerchantByCategory(category, isDeposit),
+      category,
+    };
+  }
+
+  const category = faker.helpers.arrayElement(withdrawalCategories);
 
   return {
     id: nextTransactionId++,
     accountId: faker.number.int({ min: 1, max: 2 }),
     amount: faker.number.float({ min: 2.0, max: 4000.0, fractionDigits: 2 }),
-    isDeposit,
+    type: "withdrawal",
     date: getRandomDate(),
     merchant: getMerchantByCategory(category, isDeposit),
     category,
