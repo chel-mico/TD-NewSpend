@@ -11,17 +11,7 @@ export type Period = "daily" | "weekly" | "monthly" | "yearly";
 const MONDAY = 1;
 
 function filterTransactions(period: Period, date: Date) {
-  console.log('Filter Transactions:', { 
-    period, 
-    date, 
-    totalTransactions: TRANSACTIONS.length,
-    firstTransactionDate: TRANSACTIONS.length > 0 ? new Date(TRANSACTIONS[0].date) : null
-  });
-  
-  // FOR TESTING: Return all transactions to see if that resolves the issue
-  return TRANSACTIONS;
-  
-  /* Original filtering code:
+  // Uncommented original filtering code:
   return TRANSACTIONS.filter((tr) => {
     const trDate = new Date(tr.date);
 
