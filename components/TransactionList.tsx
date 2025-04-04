@@ -59,11 +59,13 @@ function TransactionList({ frequency, period }: TransactionListProps) {
   } = useTransactionsQuery(frequency, period);
 
   if (isLoading) {
-    return <Text>Loading transactions...</Text>;
+    // TODO: loading ui
+    return <View style={styles.container}></View>;
   }
 
   if (isError) {
-    return <Text>Error loading transactions</Text>;
+    // TODO: error ui
+    return <View style={styles.container}></View>;
   }
 
   return (
