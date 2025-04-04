@@ -39,7 +39,7 @@ export function ProjectorSelectMenu({
       return Array.from({ length: count }, (_, i) => addDays(startDate, i));
     } else if (period === "weekly") {
       const count = 52;
-      const baseWeek = startOfWeek(now);
+      const baseWeek = startOfWeek(now, { weekStartsOn: 1 });
       const startDate = addWeeks(baseWeek, -(count - 1));
       return Array.from({ length: count }, (_, i) => addWeeks(startDate, i));
     } else if (period === "monthly") {
@@ -48,7 +48,7 @@ export function ProjectorSelectMenu({
       const startDate = addMonths(baseMonth, -(count - 1));
       return Array.from({ length: count }, (_, i) => addMonths(startDate, i));
     } else if (period === "yearly") {
-      const count = 12;
+      const count = 3;
       const baseYear = startOfYear(now);
       const startDate = addYears(baseYear, -(count - 1));
       return Array.from({ length: count }, (_, i) => addYears(startDate, i));
@@ -69,18 +69,21 @@ export function ProjectorSelectMenu({
   }, [period, dateList]);
 
   // onViewableItemsChanged callback to track the current visible index.
-  const onViewableItemsChanged = useRef(
-    ({ viewableItems }: { viewableItems: any[]; changed: any[] }) => {
-      if (viewableItems.length > 0) {
-        // With snapToInterval, we expect one item to be mostly visible.
-        const viewableIndex = viewableItems[0].index;
-        if (viewableIndex != null) {
-          const selectedDate = dateList[viewableIndex];
-          onValueChange(selectedDate);
-        }
+  const onViewableItemsChanged = ({
+    viewableItems,
+  }: {
+    viewableItems: any[];
+    changed: any[];
+  }) => {
+    if (viewableItems.length > 0) {
+      // With snapToInterval, we expect one item to be mostly visible.
+      const viewableIndex = viewableItems[0].index;
+      if (viewableIndex != null) {
+        const selectedDate = dateList[viewableIndex];
+        onValueChange(selectedDate);
       }
-    },
-  ).current;
+    }
+  };
 
   const viewabilityConfig = { itemVisiblePercentThreshold: 50 };
 
@@ -98,7 +101,7 @@ export function ProjectorSelectMenu({
     if (period === "daily") {
       label = format(item, "MMM dd yyyy");
     } else if (period === "weekly") {
-      label = `Week of ${format(startOfWeek(item), "EEE MMM dd yyyy")}`;
+      label = `Week of ${format(startOfWeek(item, { weekStartsOn: 1 }), "MMM dd yyyy")}`;
     } else if (period === "monthly") {
       label = format(startOfMonth(item), "MMMM");
     } else if (period === "yearly") {
