@@ -23,13 +23,25 @@ function formatToDollars(amount: number): string {
 function TransactionItem({ transaction }: TransactionItemProps) {
   const formattedDate = format(transaction.date, "EEEE MMMM d, yyyy");
   const formattedAmount = formatToDollars(transaction.amount);
+  const isDeposit = transaction.type === "deposit";
+  const underlineColor = isDeposit ? "#4CAF50" : "#F44336"; // Green/Red colors
+
   return (
-    <View style={styles.transactionItem}>
-      <View style={styles.transactionDetails}>
-        <Text style={styles.merchant}>{transaction.merchant}</Text>
-        <Text style={styles.date}>{formattedDate}</Text>
+    <View style={styles.transactionContainer}>
+      <View style={styles.transactionContent}>
+        <Text selectable={true} style={styles.amount}>
+          {formattedAmount}
+        </Text>
+        <View style={[styles.underline, { backgroundColor: underlineColor }]} />
       </View>
-      <Text style={styles.amount}>{formattedAmount}</Text>
+      <View style={styles.transactionInfo}>
+        <Text selectable={true} style={styles.merchant}>
+          {transaction.merchant}
+        </Text>
+        <Text selectable={true} style={styles.date}>
+          {formattedDate}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -78,31 +90,45 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 16,
   },
-  transactionItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 12,
-  },
-  transactionDetails: {
-    flex: 1,
-  },
-  merchant: {
-    fontSize: 16,
-    fontWeight: "500",
-    marginBottom: 4,
-  },
-  date: {
-    fontSize: 14,
-    color: "#666",
-  },
-  amount: {
-    fontSize: 16,
-    fontWeight: "500",
-  },
   separator: {
     height: 1,
     backgroundColor: "#eee",
+  },
+  transactionContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 12,
+  },
+  transactionContent: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  transactionInfo: {
+    flex: 1,
+  },
+  amount: {
+    fontWeight: "bold",
+    marginRight: 8,
+    fontSize: 16,
+  },
+  merchant: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  date: {
+    color: "#666",
+    fontSize: 14,
+    marginBottom: 4, // Reduced space above underline
+  },
+  underline: {
+    height: 4, // Thicker than separator line
+    width: "100%",
+    borderRadius: 50, // Soften edges slightly
   },
 });
 
