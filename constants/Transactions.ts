@@ -39,23 +39,31 @@ export const categories = [
 export type Category = (typeof categories)[number];
 
 export type Transaction = {
+  id: number;
   accountId: number;
-  amount: bigint;
-  isDeposit: boolean;
+  amount: number;
   date: Date;
 
   merchant: string;
-  category: Category;
-};
+} & (
+  | {
+      type: "deposit";
+      category: DepositCategories;
+    }
+  | {
+      type: "withdrawal";
+      category: WithdrawalCategories;
+    }
+);
 
 function getRandomDaysAgo(): number {
   const randomChoice = faker.number.int({ min: 1, max: 100 });
 
-  if (randomChoice <= 40) {
+  if (randomChoice <= 5) {
     return 0;
-  } else if (randomChoice <= 80) {
+  } else if (randomChoice <= 17) {
     return faker.number.int({ min: 1, max: DAYS_IN_WEEK });
-  } else if (randomChoice <= 90) {
+  } else if (randomChoice <= 30) {
     return faker.number.int({ min: DAYS_IN_WEEK + 1, max: DAYS_IN_MONTH });
   }
 
@@ -124,16 +132,33 @@ function getMerchantByCategory(category: Category, isDeposit: boolean): string {
   return "OTHER";
 }
 
+let nextTransactionId = 0;
+
 export function getRandomTransaction(): Transaction {
-  const isDeposit = faker.datatype.boolean();
-  const category = isDeposit
-    ? faker.helpers.arrayElement(depositCategories)
-    : faker.helpers.arrayElement(withdrawalCategories);
+  const randomChoice = faker.number.int({ min: 1, max: 20 });
+  const isDeposit = randomChoice < 3;
+
+  if (isDeposit) {
+    const category = faker.helpers.arrayElement(depositCategories);
+
+    return {
+      id: nextTransactionId++,
+      accountId: faker.number.int({ min: 1, max: 2 }),
+      amount: faker.number.float({ min: 100, max: 2500.0, fractionDigits: 2 }),
+      type: "deposit",
+      date: getRandomDate(),
+      merchant: getMerchantByCategory(category, isDeposit),
+      category,
+    };
+  }
+
+  const category = faker.helpers.arrayElement(withdrawalCategories);
 
   return {
+    id: nextTransactionId++,
     accountId: faker.number.int({ min: 1, max: 2 }),
-    amount: BigInt(faker.number.int({ min: 200, max: 400000 })),
-    isDeposit,
+    amount: faker.number.float({ min: 2.0, max: 400.0, fractionDigits: 2 }),
+    type: "withdrawal",
     date: getRandomDate(),
     merchant: getMerchantByCategory(category, isDeposit),
     category,
@@ -144,4 +169,4 @@ export function generateTransactions(count: number): Transaction[] {
   return Array.from({ length: count }, getRandomTransaction);
 }
 
-export const TRANSACTIONS: Transaction[] = generateTransactions(4000);
+export const TRANSACTIONS: Transaction[] = generateTransactions(500);
