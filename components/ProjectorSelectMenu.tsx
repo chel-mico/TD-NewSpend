@@ -34,11 +34,11 @@ export function ProjectorSelectMenu({
   // Build the list of dates based on the period.
   const dateList = useMemo(() => {
     if (period === "daily") {
-      const count = 365;
+      const count = 12;
       const startDate = addDays(now, -(count - 1));
       return Array.from({ length: count }, (_, i) => addDays(startDate, i));
     } else if (period === "weekly") {
-      const count = 52;
+      const count = 12;
       const baseWeek = startOfWeek(now, { weekStartsOn: 1 });
       const startDate = addWeeks(baseWeek, -(count - 1));
       return Array.from({ length: count }, (_, i) => addWeeks(startDate, i));
@@ -48,7 +48,7 @@ export function ProjectorSelectMenu({
       const startDate = addMonths(baseMonth, -(count - 1));
       return Array.from({ length: count }, (_, i) => addMonths(startDate, i));
     } else if (period === "yearly") {
-      const count = 3;
+      const count = 12;
       const baseYear = startOfYear(now);
       const startDate = addYears(baseYear, -(count - 1));
       return Array.from({ length: count }, (_, i) => addYears(startDate, i));
@@ -62,11 +62,11 @@ export function ProjectorSelectMenu({
   useEffect(() => {
     if (flatListRef.current) {
       flatListRef.current.scrollToIndex({
-        index: dateList.length - 1,
+        index: 11,
         animated: true,
       });
     }
-  }, [period, dateList]);
+  }, [period, now, flatListRef.current]);
 
   // onViewableItemsChanged callback to track the current visible index.
   const onViewableItemsChanged = ({
