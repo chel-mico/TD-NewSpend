@@ -135,7 +135,8 @@ function getMerchantByCategory(category: Category, isDeposit: boolean): string {
 let nextTransactionId = 0;
 
 export function getRandomTransaction(): Transaction {
-  const isDeposit = faker.datatype.boolean();
+  const randomChoice = faker.number.int({ min: 1, max: 20 });
+  const isDeposit = randomChoice < 3;
 
   if (isDeposit) {
     const category = faker.helpers.arrayElement(depositCategories);
@@ -143,7 +144,7 @@ export function getRandomTransaction(): Transaction {
     return {
       id: nextTransactionId++,
       accountId: faker.number.int({ min: 1, max: 2 }),
-      amount: faker.number.float({ min: 2.0, max: 4000.0, fractionDigits: 2 }),
+      amount: faker.number.float({ min: 100, max: 2500.0, fractionDigits: 2 }),
       type: "deposit",
       date: getRandomDate(),
       merchant: getMerchantByCategory(category, isDeposit),
@@ -156,7 +157,7 @@ export function getRandomTransaction(): Transaction {
   return {
     id: nextTransactionId++,
     accountId: faker.number.int({ min: 1, max: 2 }),
-    amount: faker.number.float({ min: 2.0, max: 4000.0, fractionDigits: 2 }),
+    amount: faker.number.float({ min: 2.0, max: 400.0, fractionDigits: 2 }),
     type: "withdrawal",
     date: getRandomDate(),
     merchant: getMerchantByCategory(category, isDeposit),
