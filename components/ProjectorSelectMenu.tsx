@@ -24,10 +24,15 @@ export function ProjectorSelectMenu({
   const now = useMemo(() => new Date(), []); // current date at mount time
 
   const { data: transactionSummaries } = useTransactionSummaryQuery(period);
-  const maxValue = useMemo(
-    () => Math.max(...(transactionSummaries?.map((ts) => ts.deposit) ?? [])),
-    [period],
-  );
+  const maxDeposit = (transactionSummaries ?? [])
+    .map((ts) => ts.deposit)
+    .reduce((acc, curr) => Math.max(acc, curr), 0);
+
+  const maxWithdrawal = (transactionSummaries ?? [])
+    .map((ts) => ts.withdrawal)
+    .reduce((acc, curr) => Math.max(acc, curr), 0);
+
+  const maxValue = Math.max(maxDeposit, maxWithdrawal);
 
   const flatListRef = useRef<FlatList<TransactionSummary>>(null);
 
@@ -62,8 +67,8 @@ export function ProjectorSelectMenu({
 
   // Render each date item.
   const renderItem = ({ date, withdrawal, deposit }: TransactionSummary) => {
-    const greenBarHeight = (110 * deposit) / maxValue;
-    const redBarHeight = (110 * withdrawal) / maxValue;
+    const greenBarHeight = 100 * (deposit / maxValue);
+    const redBarHeight = 100 * (withdrawal / maxValue);
 
     // Format the label based on period.
     let label = "";
