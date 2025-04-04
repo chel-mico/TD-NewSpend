@@ -21,8 +21,6 @@ export function ProjectorSelectMenu({
   const ITEM_WIDTH = SCREEN_WIDTH / 2;
   const SIDE_PADDING = SCREEN_WIDTH / 4;
 
-  const now = useMemo(() => new Date(), []); // current date at mount time
-
   const { data: transactionSummaries } = useTransactionSummaryQuery(period);
   const maxDeposit = (transactionSummaries ?? [])
     .map((ts) => ts.deposit)
@@ -44,7 +42,7 @@ export function ProjectorSelectMenu({
         animated: true,
       });
     }
-  }, [period, now, flatListRef.current]);
+  }, [transactionSummaries, flatListRef.current]);
 
   // onViewableItemsChanged callback to track the current visible index.
   const onViewableItemsChanged = ({
