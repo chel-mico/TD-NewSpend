@@ -31,10 +31,6 @@ function roundToTwo(num: number): number {
   return Math.round(num * 100) / 100;
 }
 
-// Example usage:
-const value = 3.14159;
-console.log(roundToTwo(value)); // 3.14
-
 export function aggregateTransactions(period: Period): TransactionSummary[] {
   const groups = new Map<
     string,
@@ -48,7 +44,7 @@ export function aggregateTransactions(period: Period): TransactionSummary[] {
         periodStart = startOfDay(tx.date);
         break;
       case "weekly":
-        periodStart = startOfWeek(tx.date);
+        periodStart = startOfWeek(tx.date, { weekStartsOn: 1 });
         break;
       case "monthly":
         periodStart = startOfMonth(tx.date);
@@ -80,7 +76,7 @@ export function aggregateTransactions(period: Period): TransactionSummary[] {
       currentPeriodStart = startOfDay(now);
       break;
     case "weekly":
-      currentPeriodStart = startOfWeek(now);
+      currentPeriodStart = startOfWeek(now, { weekStartsOn: 1 });
       break;
     case "monthly":
       currentPeriodStart = startOfMonth(now);
