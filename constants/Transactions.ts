@@ -59,7 +59,7 @@ export type Transaction = {
 function getRandomDaysAgo(): number {
   const randomChoice = faker.number.int({ min: 1, max: 100 });
 
-  if (randomChoice <= 5) {
+  if (randomChoice <= 2) {
     return 0;
   } else if (randomChoice <= 17) {
     return faker.number.int({ min: 1, max: DAYS_IN_WEEK });
