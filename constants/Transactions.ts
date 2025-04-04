@@ -52,11 +52,11 @@ export type Transaction = {
 function getRandomDaysAgo(): number {
   const randomChoice = faker.number.int({ min: 1, max: 100 });
 
-  if (randomChoice <= 40) {
+  if (randomChoice <= 5) {
     return 0;
-  } else if (randomChoice <= 80) {
+  } else if (randomChoice <= 17) {
     return faker.number.int({ min: 1, max: DAYS_IN_WEEK });
-  } else if (randomChoice <= 90) {
+  } else if (randomChoice <= 30) {
     return faker.number.int({ min: DAYS_IN_WEEK + 1, max: DAYS_IN_MONTH });
   }
 
@@ -148,4 +148,4 @@ export function generateTransactions(count: number): Transaction[] {
   return Array.from({ length: count }, getRandomTransaction);
 }
 
-export const TRANSACTIONS: Transaction[] = generateTransactions(200);
+export const TRANSACTIONS: Transaction[] = generateTransactions(500);
