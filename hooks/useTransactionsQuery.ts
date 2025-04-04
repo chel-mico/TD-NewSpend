@@ -6,7 +6,9 @@ import {
   TRANSACTIONS,
 } from "@/constants/Transactions";
 
-type Frequency = "daily" | "weekly" | "monthly" | "yearly";
+export type Frequency = "daily" | "weekly" | "monthly" | "yearly";
+
+const MONDAY = 1;
 
 function filterTransactions(frequency: Frequency, period: Date) {
   return TRANSACTIONS.filter((tr) => {
@@ -16,7 +18,7 @@ function filterTransactions(frequency: Frequency, period: Date) {
       case "daily":
         return isSameDay(trDate, period);
       case "weekly":
-        return isSameWeek(trDate, period);
+        return isSameWeek(trDate, period, { weekStartsOn: MONDAY });
       case "monthly":
         return isSameMonth(trDate, period);
       case "yearly":
@@ -29,7 +31,7 @@ function filterTransactions(frequency: Frequency, period: Date) {
 
 async function fetchTransactions(frequency: Frequency, period: Date) {
   const filtered = filterTransactions(frequency, period);
-  return filtered.toSorted(
+  return filtered.sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
 }

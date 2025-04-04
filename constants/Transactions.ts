@@ -39,8 +39,9 @@ export const categories = [
 export type Category = (typeof categories)[number];
 
 export type Transaction = {
+  id: number;
   accountId: number;
-  amount: bigint;
+  amount: number;
   isDeposit: boolean;
   date: Date;
 
@@ -124,6 +125,8 @@ function getMerchantByCategory(category: Category, isDeposit: boolean): string {
   return "OTHER";
 }
 
+let nextTransactionId = 0;
+
 export function getRandomTransaction(): Transaction {
   const isDeposit = faker.datatype.boolean();
   const category = isDeposit
@@ -131,8 +134,9 @@ export function getRandomTransaction(): Transaction {
     : faker.helpers.arrayElement(withdrawalCategories);
 
   return {
+    id: nextTransactionId++,
     accountId: faker.number.int({ min: 1, max: 2 }),
-    amount: BigInt(faker.number.int({ min: 200, max: 400000 })),
+    amount: faker.number.float({ min: 2.0, max: 4000.0, fractionDigits: 2 }),
     isDeposit,
     date: getRandomDate(),
     merchant: getMerchantByCategory(category, isDeposit),
@@ -144,4 +148,4 @@ export function generateTransactions(count: number): Transaction[] {
   return Array.from({ length: count }, getRandomTransaction);
 }
 
-export const TRANSACTIONS: Transaction[] = generateTransactions(4000);
+export const TRANSACTIONS: Transaction[] = generateTransactions(200);
