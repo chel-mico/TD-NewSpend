@@ -9,18 +9,10 @@ import {
 } from "../hooks/useTransactionsQuery";
 import { Transaction } from "@/constants/Transactions";
 import { format } from "date-fns";
+import { formatToDollars } from "@/hooks/useTransactionSummaryQuery";
 
 interface TransactionItemProps {
   transaction: Transaction;
-}
-
-function formatToDollars(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
 }
 
 function TransactionItem({ transaction }: TransactionItemProps) {

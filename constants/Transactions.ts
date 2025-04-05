@@ -4,7 +4,7 @@ import { subDays } from "date-fns/subDays";
 const DAYS_IN_YEAR = 365;
 const DAYS_IN_WEEK = 7;
 const DAYS_IN_MONTH = 30; // Approximate number of days in a month
-const MAX_DAYS_AGO = DAYS_IN_YEAR * 2;
+const MAX_DAYS_AGO = DAYS_IN_YEAR * 10;
 
 export const depositCategories = [
   "Salary",
@@ -59,11 +59,11 @@ export type Transaction = {
 function getRandomDaysAgo(): number {
   const randomChoice = faker.number.int({ min: 1, max: 100 });
 
-  if (randomChoice <= 5) {
+  if (randomChoice <= 8) {
     return 0;
-  } else if (randomChoice <= 17) {
+  } else if (randomChoice <= 4) {
     return faker.number.int({ min: 1, max: DAYS_IN_WEEK });
-  } else if (randomChoice <= 30) {
+  } else if (randomChoice <= 10) {
     return faker.number.int({ min: DAYS_IN_WEEK + 1, max: DAYS_IN_MONTH });
   }
 
@@ -136,7 +136,7 @@ let nextTransactionId = 0;
 
 export function getRandomTransaction(): Transaction {
   const randomChoice = faker.number.int({ min: 1, max: 20 });
-  const isDeposit = randomChoice < 3;
+  const isDeposit = randomChoice < 2;
 
   if (isDeposit) {
     const category = faker.helpers.arrayElement(depositCategories);
@@ -144,7 +144,7 @@ export function getRandomTransaction(): Transaction {
     return {
       id: nextTransactionId++,
       accountId: faker.number.int({ min: 1, max: 2 }),
-      amount: faker.number.float({ min: 100, max: 2500.0, fractionDigits: 2 }),
+      amount: faker.number.float({ min: 20, max: 500.0, fractionDigits: 2 }),
       type: "deposit",
       date: getRandomDate(),
       merchant: getMerchantByCategory(category, isDeposit),
@@ -157,7 +157,7 @@ export function getRandomTransaction(): Transaction {
   return {
     id: nextTransactionId++,
     accountId: faker.number.int({ min: 1, max: 2 }),
-    amount: faker.number.float({ min: 2.0, max: 400.0, fractionDigits: 2 }),
+    amount: faker.number.float({ min: 2.0, max: 100.0, fractionDigits: 2 }),
     type: "withdrawal",
     date: getRandomDate(),
     merchant: getMerchantByCategory(category, isDeposit),
