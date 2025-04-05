@@ -38,7 +38,12 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={DefaultTheme}>
         <Stack>
-          <Stack.Screen name="index" />
+          <Stack.Screen 
+            name="index" 
+            options={{
+              headerShown: false
+            }}
+          />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>
