@@ -6,6 +6,7 @@ import TransactionList from "@/components/TransactionList";
 import { PeriodSelectMenu } from "@/components/PeriodSelectMenu";
 import type { Period } from "@/hooks/useTransactionsQuery";
 import { ProjectorSelectMenu } from "@/components/ProjectorSelectMenu";
+import { BankHeader } from "@/components/BankHeader";
 
 const today = new Date();
 export default function HomeScreen() {
@@ -16,38 +17,41 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <ProjectorSelectMenu
-        period={period}
-        onValueChange={(date) => {
-          setDate(date);
-          console.log(date);
-        }}
-      />
-      <View style={styles.menuContainer}>
-        <ToggleButton
-          label="Merchants"
-          isActive={merchants}
-          onToggle={() => setMerchants((v) => !v)}
-        />
-        <ToggleButton
-          label="Categories"
-          isActive={categories}
-          onToggle={() => setCategories((v) => !v)}
-        />
-        <PeriodSelectMenu
-          selectedValue={period}
-          onValueChange={(p) => {
-            setPeriod(p);
-            setDate(new Date());
+      <BankHeader />
+      <View style={styles.mainContent}>
+        <ProjectorSelectMenu
+          period={period}
+          onValueChange={(date) => {
+            setDate(date);
+            console.log(date);
           }}
         />
+        <View style={styles.menuContainer}>
+          <ToggleButton
+            label="Merchants"
+            isActive={merchants}
+            onToggle={() => setMerchants((v) => !v)}
+          />
+          <ToggleButton
+            label="Categories"
+            isActive={categories}
+            onToggle={() => setCategories((v) => !v)}
+          />
+          <PeriodSelectMenu
+            selectedValue={period}
+            onValueChange={(p) => {
+              setPeriod(p);
+              setDate(new Date());
+            }}
+          />
+        </View>
+        <TransactionList 
+          period={period} 
+          date={date} 
+          showMerchants={merchants}
+          showCategories={categories}
+        />
       </View>
-      <TransactionList 
-        period={period} 
-        date={date} 
-        showMerchants={merchants}
-        showCategories={categories}
-      />
     </View>
   );
 }
@@ -56,6 +60,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
+    backgroundColor: "#FFFFFF",
+  },
+  mainContent: {
+    flex: 1,
   },
   menuContainer: {
     display: "flex",
